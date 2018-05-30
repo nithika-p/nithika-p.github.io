@@ -1,0 +1,59 @@
+html,body{
+  background-color:#44678c;
+  font-family: 'Lato', sans-serif;
+  color:#164796;
+}
+.form{
+  line-height: 2;
+  text-align: center;
+  background-color: #bfdcfc;
+  padding:40px;
+}
+.btn{
+ 
+  border-radius: 10px;
+  background-color: #0d4789; /* Green */
+  border: none;
+  color: white;
+ 
+}
+img{
+  height:10%;
+  width:30%;
+  margin:20px;
+}
+.form-container{
+  padding: 40px;
+}
+.label{
+  font-size: 20px;
+}
+#imsiList ol span{
+  margin-left: 10px;
+  margin-right: 10px;
+}
+#devices-conected-to-enodeb ol span{
+  margin-left: 10px;
+  margin-right: 10px;
+}
+[type="checkbox"].filled-in:checked + span:not(.lever){
+  height:10px;
+}
+label{
+  color:#164796;
+}
+#devices-conected-to-enodeb ol{
+  text-align:left;
+}
+#imsiList ol{
+  text-align:left;
+}
+.btn:hover{
+  background-color: #1565c0;
+}
+td{
+  text-align: center;
+}
+th{
+  text-align: center;
+}

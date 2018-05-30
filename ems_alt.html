@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="ems.css"/>
+  <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+  $(document).ready(function(){
+      $("#IP").click(function(){
+          $.ajax({url:"http://192.168.233.12/python/mme/ems_mme_subscriber_imsi_list.py/ems_recv_n_post_data_for_subs_info_list_for_get?text1=48;text2=2;text3=admin~ADMIN~admin;api_id=EMS_MME_SUBSCRIBER_LIST;action_id=3;name_encoded_data=48^^2^^admin~ADMIN~admin^^EMS_MME_SUBSCRIBER_LIST^^3", async: false, success: function(result){
+              alert($(result).find(".index_value").text());
+              var imsi_no=$(result).find(".index_value").text();
+              var IP_end=parseInt(imsi_no,10)%1000;
+              var IP="192.168.232."+String(IP_end);
+          }});
+      });
+  });
+</script>
+</head>
+<body>
+<div style="text-align: center;"><img src="logo.png"/></div>
+<div style="margin-left:25%;margin-right:25%; margin-top:5%;margin-bottom:5%;">
+   <form class="col s12 form-container form">
+     <div class="row">
+       <span><h4 class="label col s4">Server IP</h4></span>
+       <div class="input-field col s8" style="float:right;">
+         <input id="serverip" type="text" class="validate" value="192.168.45.87">
+         <label for="serverip">Server IP</label>
+       </div>
+     </div>
+     <div class="row">
+       <span><h4 class="label col s4">Port</h4></span>
+       <div class="input-field col s8" style="float:right;">
+         <input id="port" type="text" class="validate" value="5001">
+         <label for="port">Port</label>
+       </div>
+     </div>
+     <div class="row">
+       <span><h4 class="label col s4">Mgr Port</h4></span>
+       <div class="input-field col s8" style="float:right;">
+         <input id="mgrport" type="text" class="validate" value="5001">
+         <label for="mgrport">Mgr Port</label>
+       </div>
+     </div>
+     <div class="row">
+       <span><h4 class="label col s4">Time</h4></span>
+       <div class="input-field col s8" style="float:right;">
+         <input id="time" type="text" class="validate" value="30">
+         <label for="time">Time</label>
+       </div>
+     </div>
+     <div class="row">
+       <span><h4 class="label col s4">Protocol</h4></span>
+       <div class="input-field col s8" style="float:right;">
+         <input id="protocol" type="text" class="validate" value="tcp">
+         <label for="protocol">Protocol</label>
+       </div>
+     </div>
+     <div class="row">
+       <span><h4 class="label col s4">Length</h4></span>
+       <div class="input-field col s8" style="float:right;">
+         <input id="length" type="text" class="validate" value="1024">
+         <label for="length">Length</label>
+       </div>
+     </div>
+     <div class="row">
+       <span><h4 class="label col s4">Bandwidth</h4></span>
+       <div class="input-field col s8" style="float:right;">
+         <input id="bandwidth" type="text" class="validate" value="19m">
+         <label for="bandwidth">Bandwidth</label>
+       </div>
+     </div>
+     <div class="row">
+       <span><h4 class="label col s4">Client Number</h4></span>
+       <div class="input-field col s8" style="float:right;">
+         <input id="clientno" type="text" class="validate" value="1">
+         <label for="clientno">Client Number</label>
+       </div>
+     </div>
+     <button id="IP">alert IP</button><br/><br/>
+     <button id="url">alert GET Url</button><br/><br/>
+   </form>
+ </div>
+<!--JavaScript at end of body for optimized loading-->
+      <script type="text/javascript" src="js/materialize.min.js"></script>
+      <script>
+        $(document).ready(function(){
+            $("#url").click(function(){
+                var element="198.168.233.200";
+                var server_IP=document.getElementById("serverip").value;
+                var port=document.getElementById("port").value;
+                var mgrPort=document.getElementById("mgrport").value;
+                var time=document.getElementById("time").value;
+                var protocol=document.getElementById("protocol").value;
+                var length=document.getElementById("length").value;
+                var bandwidth=document.getElementById("bandwidth").value;
+                var clientNo=document.getElementById("clientno").value;
+                var GET_url="http://" + element + "/iperfstart.asp?param=server=" + server_IP + "%20port=" + port + "%20mgrPort=" + mgrPort + "%20time=" + time + "%20protocol=" + protocol + "%20length=" + length + "%20bandwidth=" + bandwidth + "%20clientNo=" + clientNo;
+                alert(GET_url);
+            });
+        });
+      </script>
+</body>
+</html>
+
+<!--url--
+var GET_url="http://" + element + "/iperfstart.asp?param=server=" + server_IP + "%20port=" + port + "%20mgrPort=" + mgrPort + "%20time=" + time + "%20protocol=" + protocol + "%20length=" + length + "%20bandwidth=" + bandwidth + "%20clientNo=" + clientNo;
+-->
+
+                         <!--$('#LTE-SETTINGS ol').append('<li><div><h6>'+IP+'</h6></div><div>Cell ID : '+cell_id+'</div><div>RSRPS : '+rsrps+'</div><div>RSRP0 : '+rsrp0+'</div><div>RSRP1 : '+rsrp1+'</div><div>DL Frequency : '+dl_freq+'</div><div>UL Frequency : '+ul_freq+'</div><div>Bandwidth : '+bandwidth+'</div><div>CINRS : '+cinrs+'</div><div>CINR0 : '+cinr0+'</div><div>CINR1 : '+cinr1+'</div><div>TX_Power : '+tx_power+'</div><div>PCI : '+pci+'</div><div>Enodeb ID : '+enb_id+'</div><div>MNC : '+mnc+'</div><div>MCC : '+mcc+'</div><div>SINR : '+sinr+'</div><div>WBSINR0 : '+wbsinr0+'</div><div>WBSINR1 : '+wbsinr1+'</div><div>DL MCS : '+dl_mcs+'</div><div>UL MCS : '+ul_mcs+'</div><div>Signal : '+signal+'</div><div>CQI : '+cqi+'</div>');-->
+
+                          <!--$('#lte-table tbody').append('<tr><td>'+IP+'</td><td>'+cell_id+'</td><td>'+rsrps+'</td><td>'+rsrp0+'</td><td>'+rsrp1+'</td><td>'+rsrq+'</td><td>'+dl_freq+'</td><td>'+ul_freq+'</td><td>'+bandwidth+'</td><td>'+cinrs+'</td><td>'+cinr0+'</td><td>'+cinr1+'</td><td>'+tx_power+'</td><td>'+pci+'</td><td>'+enb_id+'</td><td>'+mnc+'</td><td>'+mcc+'</td><td>'+sinr+'</td><td>'+wbsinr0+'</td><td>'+wbsinr1+'</td><td>'+dl_mcs+'</td><td>'+ul_mcs+'</td><td>'+signal+'</td><td>'+cqi+'</td></tr>');-->
+
+                          <!--<th>IP</th>
+                <th>Cell ID</th>
+                <th>RSRPS</th>
+                <th>RSRP0</th>
+                <th>RSRP1</th>
+                <th>DL Frequency</th>
+                <th>UL Frequency</th>
+                <th>Bandwidth</th>
+                <th>CINRS</th>
+                <th>CINR0</th>
+                <th>CINR1</th>
+                <th>TX_Power</th>
+                <th>PCI</th>
+                <th>Enodeb ID</th>
+                <th>MNC</th>
+                <th>MCC</th>
+                <th>SINR</th>
+                <th>WBSINR0</th>
+                <th>WBSINR1</th>
+                <th>DL MCS</th>
+                <th>UL MCS</th>
+                <th>Signal</th>
+                <th>CQI</th>-->

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+  
+  <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+      <!--GOOGLE-FONT-LATO--><link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+      <link type="text/css" rel="stylesheet" href="ems.css"/>
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+ $(document).ready(function(){
+
+   $("#login").click(function(){
+
+      $.ajax({
+
+    url: 'http://192.168.233.12/python/framework/ems_session_mgmt.py/ems_recv_n_verify_user_name',
+    type: 'POST',
+    crossDomain: true, 
+    data:"username=admin&password=admin",
+    xhrFields: {
+      withCredentials: true
+    },
+    username: 'admin',
+    password: 'admin',
+    success: function(){
+              alert("Logged in successfully");
+          },
+    error: function(jqXHR, exception) { alert(jqXHR.status + "   " + exception); }
+     });
+  });
+   
+
+
+    $("#mme").click(function(){
+
+      $('#imsiList ol').empty();
+      $('#devices-conected-to-enodeb ol').empty();
+      var ID=$("#enodeb-input").val();
+      $("#eb-id-h5 h5").text("UEs connected to enodeb-"+ID);
+
+      $.ajax({
+
+          url: "http://192.168.233.12/python/mme/ems_mme_subscriber_imsi_list.py/ems_recv_n_post_data_for_subs_info_list_for_get?text1=48;text2=2;text3=admin~ADMIN~admin;api_id=EMS_MME_SUBSCRIBER_LIST;action_id=3;name_encoded_data=48^2^admin~ADMIN~admin^EMS_MME_SUBSCRIBER_LIST^3",
+          type: "GET",
+          crossDomain: true,
+          header: {
+           Origin: 'http://http://192.168.233.12/python/framework/ems_session_mgmt.py/ems_logout?text1=admin;name_encoded_data=admin'
+           },
+           //beforeSend: function(request) {
+              //request.setRequestHeader("Referer", "http://192.168.233.12/python/framework/ems_node_summary.py/ems_recv_n_post_data_for_node_summary?text1=48;text2=2;text3=admin~ADMIN~admin;text4=EMS_FRAMEWORK_NODE_SUMMARY;text5=3;name_encoded_data=48^2^admin~ADMIN~admin^EMS_FRAMEWORK_NODE_SUMMARY^3");
+             // request.setRequestHeader("Origin", "http://192.168.233.12/");
+              //request.setRequestHeader("Host", "192.168.233.12");
+              //request.setRequestHeader("Cookie", "pysid=5b35866b2afc61be00bc225f804246d8");
+              //request.setRequestHeader("Cookie", "SESSION_KEY=60749; pysid=5b35866b2afc61be00bc225f804246d8");
+              //request.setRequestHeader("Upgrade-Insecure-Requests", "1");
+              //request.setRequestHeader("Cookie", "SESSION_KEY=60749; pysid=5b35866b2afc61be00bc225f804246d8");
+             //},
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function(result){
+                    //alert("success fetch of table list");
+                    var imsi_no=$(result).find(".index_value").text();
+                    imsi_no=imsi_no.split("\n");
+                    //alert(typeof imsi_no);
+                    imsi_no.forEach(function(element)
+                      {
+                        var IP_end=parseInt(element,10)%1000;
+                        //if(IP_end===NaN){break;}
+                        var IP="192.168.233."+String(IP_end);
+                        //alert(IP);
+                        $.ajax({
+
+                            url: "http://192.168.233.12/python/mme/ems_mme_subscriber_imsi_list.py/ems_post_data_for_subs_info_for_selective_get?name_encoded_data=48%5E2%5Eadmin%7EADMIN%7Eadmin%5EEMS_MME_SUBS_INFO_ENTRY%5E3%5E0%5E%2Fopt%2Fems%2Fgui%2F48%2Fimsi_mme.txt%5E0%5E1%5E11%5E"+element+"%5E%5E%5E%5E%5E0%5E&node_id=48&node_type=2&username=admin%7EADMIN%7Eadmin&api_id=EMS_MME_SUBS_INFO_ENTRY&api_action=3&pa_index=0&file_path=%2Fopt%2Fems%2Fgui%2F48%2Fimsi_mme.txt&mode_type=0&click_action=1&imsi_list_count=11&imsi_entry="+element+"&search_page_index=&search_entry=&bearer_id_name=&d_no=&SubsMode=0&imsi_search=",
+                            type: 'GET',
+                            crossDomain: true,
+                              xhrFields: {
+                                  withCredentials: true
+                              },
+                              username: 'admin',
+                              password: 'admin',
+                              success: function(result){
+                                      var enodebid=$(result).find("#enodebid").val();
+                                      //alert("fetched id of"+element);
+                                      var ID=$("#enodeb-input").val();
+                                      $("#eb-id-h5 h5").text("UEs connected to enodeb-"+ID);
+                                      $('#imsiList ol').append(
+                                        $('<li>').append("<span>IMSI_NO : "+ element +"</span><span>      enodeb-ID : "+enodebid+ "</span><span>  IP : "+IP).append("</span></li>"));
+                                      if(ID==enodebid)
+                                      {
+                                        $('#devices-conected-to-enodeb ol').append(
+                                        '<li><label><input type="checkbox" class="filled-in box" checked="true" /><span><span>IMSI_NO : '+ element +'</span><span>      enodeb-ID : '+enodebid+ '</span><span>  IP : '+IP+'</span></span></label></li>'
+                                        );
+
+                                        $("#login-ue").click(function(){
+
+                                          $.ajax({
+
+                                          url: 'https://'+IP+'/action/login',
+                                          type: 'POST',
+                                          crossDomain: true, 
+                                          data:"username=admin&password=admin&submit=Login",
+                                          xhrFields: {
+                                            withCredentials: true
+                                          },
+                                          username: 'admin',
+                                          password: 'admin',
+                                          success: function(){
+                                                    alert("Logged in successfully to"+IP);
+                                                },
+                                          error: function(jqXHR, exception) { alert(jqXHR.status + "   " + exception); }
+                                           });
+                                        
+                                          $.ajax({
+
+                                            url: 'https://'+IP+'/session.asp',
+                                            type: 'GET',
+                                            crossDomain: true, 
+                                            xhrFields: {
+                                              withCredentials: true
+                                            },
+                                            username: 'admin',
+                                            password: 'admin',
+                                            success: function(){
+                                                      //alert("session obtained for "+IP);
+                                                  },
+                                            error: function(jqXHR, exception) { alert(jqXHR.status + "   " + exception); }
+                                             });
+                                          $.ajax({
+
+                                            url: 'https://'+IP+'/iperf.asp',
+                                            type: 'GET',
+                                            crossDomain: true, 
+                                            xhrFields: {
+                                              withCredentials: true
+                                            },
+                                            username: 'admin',
+                                            password: 'admin',
+                                            success: function(){
+                                                      //alert("iperf loaded for "+IP);
+                                                  },
+                                            error: function(jqXHR, exception) { alert(jqXHR.status + "   " + exception); }
+                                             });
+                                        });//LOGIN-UE END
+                                    
+
+                                       $("#start").click(function(){
+
+                                          $('tbody').empty();
+                                          
+
+                                          var server_IP=document.getElementById("serverip").value;
+                                          var port=document.getElementById("port").value;
+                                          var mgrPort=document.getElementById("mgrport").value;
+                                          var time=document.getElementById("time").value;
+                                          var protocol=document.getElementById("protocol").value;
+                                          var length=document.getElementById("length").value;
+                                          var bandwidth=document.getElementById("bandwidth").value;
+                                          var clientNo=document.getElementById("clientno").value;
+
+                                          //alert($('#box').prop('checked'));
+                                          var GET_url="https://" + IP + "/iperfstart.asp?param=server=" + server_IP + "%20port=" + port + "%20mgrPort=" + mgrPort + "%20time=" + time + "%20protocol=" + protocol + "%20length=" + length + "%20bandwidth=" + bandwidth + "%20clientNo=" + clientNo;
+                                           //alert(GET_url);
+                                           $.ajax({
+                                              url:GET_url,
+                                              type:'GET',
+                                              crossDomain: true,
+                                             xhrFields: {
+                                                  withCredentials: true
+                                              },
+                                              success:function(result){
+                                                //alert(typeof result);
+                                                var res_arr=result.split("\n");
+                                                var ul=res_arr[0].split("=");
+                                                var ul=ul[1];
+                                                var dl=res_arr[1].split("=");
+                                                var dl=dl[1];
+                                                var us=res_arr[2].split("=")[1];
+                                                
+                                                var ds=res_arr[3].split("=");
+                                                var ds=ds[1];
+                                                $('#iperf-table tbody').append('<tr><td>'+IP+'</td><td>'+ul+'</td><td>'+dl+'</td><td>'+us+'</td><td>'+ds+'</td></tr>');
+                                                
+                                              },
+                                              error: function(jqXHR, exception) { alert(jqXHR.status + "   " + exception); },
+                                            });
+
+                                        });//START ENDS
+
+                                      //lte-settings get request to lte-status.asp
+
+                                       $('#lte-btn').click(function(){
+
+                                          $('#lte-table tbody').empty();
+
+                                          $.ajax({
+                                              url:"https://"+IP+"/lte-status.asp",
+                                              type:'GET',
+                                              crossDomain: true,
+                                             xhrFields: {
+                                                  withCredentials: true
+                                              },
+                                              success:function(result){
+                                                //alert(typeof result);
+                                                var res_arr=result.split("\n");
+                                                var cell_id=res_arr[4].split("=")[1];
+                                                var rsrps=res_arr[5].split("=")[1];
+                                                var rsrp0=res_arr[6].split("=")[1];
+                                                var rsrp1=res_arr[7].split("=")[1];
+                                                var rsrq=res_arr[8].split("=")[1];
+                                                var dl_freq=res_arr[9].split("=")[1];
+                                                var ul_freq=res_arr[10].split("=")[1];
+                                                var bandwidth=res_arr[11].split("=")[1];
+                                                var cinrs=res_arr[12].split("=")[1]; 
+                                                var cinr0=res_arr[13].split("=")[1];
+                                                var cinr1=res_arr[14].split("=")[1];
+                                                var tx_power=res_arr[15].split("=")[1];
+                                                var pci=res_arr[16].split("=")[1];
+                                                var enb_id=res_arr[17].split("=")[1];
+                                                var mnc=res_arr[19].split("=")[1];
+                                                var mcc=res_arr[20].split("=")[1];
+                                                var sinr=res_arr[21].split("=")[1];
+                                                var wbsinr0=res_arr[22].split("=")[1];
+                                                var wbsinr1=res_arr[23].split("=")[1];
+                                                var dl_mcs=res_arr[24].split("=")[1];
+                                                var ul_mcs=res_arr[25].split("=")[1];
+                                                var signal=res_arr[26].split("=")[1];
+                                                var cqi=res_arr[27].split("=")[1];
+                                                 $('#lte-table tbody').append('<tr><td>'+IP+'</td><td>'+cell_id+'</td><td>'+rsrps+'</td><td>'+rsrp0+'</td><td>'+rsrp1+'</td><td>'+rsrq+'</td><td>'+dl_freq+'</td><td>'+cinrs+'</td><td>'+cinr0+'</td><td>'+cinr1+'</td><td>'+tx_power+'</td><td>'+pci+'</td><td>'+sinr+'</td><td>'+wbsinr0+'</td><td>'+wbsinr1+'</td><td>'+dl_mcs+'</td><td>'+ul_mcs+'</td><td>'+cqi+'</td></tr>');
+                                                
+                                              },
+                                              error: function(jqXHR, exception) { alert(jqXHR.status + "   " +exception); },
+                                            });
+                                        });//lte settings btn click ends
+
+                                     } 
+                                  },
+                              error: function(jqXHR, exception) { alert(jqXHR.status + "   " + exception); }
+                             });
+                        //inner get ajax end
+                      });//foreach end
+                    
+                },
+            error: function(jqXHR, exception) { alert(jqXHR.status + "   " + exception); }
+     });// outer get ajax end
+  });
+});
+
+</script>
+</head>
+<body>
+  <div style="text-align: center;"><img src="logo.png"/></div><br/>
+  <div style="text-align: center;">
+    <a id="login" class="waves-effect waves-light btn">login</a>
+  </div>
+  <br/>
+  <div class= "row" style="margin-left:10%;margin-right:10%; margin-top:5%;margin-bottom:5%;">
+       <div class="col s7 form-container form"> 
+          <div class="row">
+             <span><h4 class="label col s4">Enodeb-ID</h4></span>
+             <div class="input-field col s8" style="float:right;">
+               <input name="enodeb-input" type="text" id="enodeb-input" class="validate">
+               <label for="enodeb-input">Enodeb-ID</label>
+             </div>
+           </div> 
+        <a id="mme" class="waves-effect waves-light btn">find active devices</a>
+        <div id="imsiList">
+          <div><h5>Connected UE list</h5></div>
+          <ol>
+          </ol>
+        </div>
+        <br/>
+        <div id="devices-conected-to-enodeb">
+          <div id="eb-id-h5"><h5></h5></div>
+          <ol>
+          </ol>
+        </div>
+     </div>
+     <div class="col s1"></div>
+     <div class="col s4 form-container form">
+       <div class="row">
+         <span><h4 class="label col s4">Server IP</h4></span>
+         <div class="input-field col s8" style="float:right;">
+           <input id="serverip" type="text" class="validate" value="192.168.233.11">
+           <label for="serverip">Server IP</label>
+         </div>
+       </div>
+       <div class="row">
+         <span><h4 class="label col s4">Port</h4></span>
+         <div class="input-field col s8" style="float:right;">
+           <input id="port" type="text" class="validate" value="65430">
+           <label for="port">Port</label>
+         </div>
+       </div>
+       <div class="row">
+         <span><h4 class="label col s4">Mgr Port</h4></span>
+         <div class="input-field col s8" style="float:right;">
+           <input id="mgrport" type="text" class="validate" value="65430">
+           <label for="mgrport">Mgr Port</label>
+         </div>
+       </div>
+       <div class="row">
+         <span><h4 class="label col s4">Time</h4></span>
+         <div class="input-field col s8" style="float:right;">
+           <input id="time" type="text" class="validate" value="30">
+           <label for="time">Time</label>
+         </div>
+       </div>
+       <div class="row">
+         <span><h4 class="label col s4">Protocol</h4></span>
+         <div class="input-field col s8" style="float:right;">
+           <input id="protocol" type="text" class="validate" value="tcp">
+           <label for="protocol">Protocol</label>
+         </div>
+       </div>
+       <div class="row">
+         <span><h4 class="label col s4">Length</h4></span>
+         <div class="input-field col s8" style="float:right;">
+           <input id="length" type="text" class="validate" value="1024">
+           <label for="length">Length</label>
+         </div>
+       </div>
+       <div class="row">
+         <span><h4 class="label col s4">Bandwidth</h4></span>
+         <div class="input-field col s8" style="float:right;">
+           <input id="bandwidth" type="text" class="validate" value="19m">
+           <label for="bandwidth">Bandwidth</label>
+         </div>
+       </div>
+       <div class="row">
+         <span><h4 class="label col s4">Client Number</h4></span>
+         <div class="input-field col s8" style="float:right;">
+           <input id="clientno" type="text" class="validate" value="1">
+           <label for="clientno">Client Number</label>
+         </div>
+       </div>
+       <a id="login-ue" class="waves-effect waves-light btn">LOGIN</a><br/><br/>
+       <a id="start" class="waves-effect waves-light btn">start</a><br/><br/>
+       <a id="lte-btn" class="waves-effect waves-light btn">lte settings</a><br/><br/>
+     </div>
+     </div>
+    <div class= "row" style="margin-left:2%;margin-right:2%; margin-top:5%;margin-bottom:5%;">
+      <div class="col s12 form-container form">
+        <div id="result">
+          <div><h5>TEST RESULTS</h5></div><br/>
+          <table id="iperf-table">
+            <thead>
+              <tr>
+                <th>IP</th>
+                <th>Uplink Latency</th>
+                <th>Downlink Latency</th>
+                <th>Uplink Speed</th>
+                <th>Downlink Speed</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table></br>
+        </div>
+        <div id="LTE-SETTINGS">
+          <div><h5>LTE SETTINGS</h5></div><br/>
+          <table id="lte-table">
+            <thead>
+              <tr>
+                <th>IP</th>
+                <th>Cell ID</th>
+                <th>RSRPS</th>
+                <th>RSRQ</th>
+                <th>RSR0</th>
+                <th>RSR1</th>
+                <th>UL & DL Frequency</th>
+                <th>CINRS</th>
+                <th>CINR0</th>
+                <th>CINR1</th>
+                <th>TX_Power</th>
+                <th>PCI</th>
+                <th>SINR</th>
+                <th>WBSINR0</th>
+                <th>WBSINR1</th>
+                <th>DL MCS</th>
+                <th>UL MCS</th>
+                <th>CQI</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table><br/><br/>
+        </div>   
+    </div>
+  
+  <!--JavaScript at end of body for optimized loading-->
+      <script type="text/javascript" src="js/materialize.min.js"></script>
+      
+</body>
+</html>
+
+<!--"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --disable-web-security  --user-data-dir="C://Chrome dev session"-->
