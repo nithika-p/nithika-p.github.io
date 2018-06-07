@@ -16,7 +16,7 @@
       <link type="text/css" rel="stylesheet" href="ems.css"/>
       <!--Let browser know website is optimized for mobile-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="jquery.min.js"></script>
 <script>
  $(document).ready(function(){
 
@@ -157,7 +157,7 @@
 
                                        $("#start").click(function(){
 
-                                          $('tbody').empty();
+                                          $('#iperf-table tbody').empty();
                                           
 
                                           var server_IP=document.getElementById("serverip").value;
@@ -194,7 +194,7 @@
                                                 
                                               },
                                               error: function(jqXHR, exception) { alert(jqXHR.status + "   " + exception); },
-                                            });
+                                             });
 
                                         });//START ENDS
 
@@ -211,7 +211,7 @@
                                              xhrFields: {
                                                   withCredentials: true
                                               },
-                                              success:function(result){
+                                               success:function(result){
                                                 //alert(typeof result);
                                                 var res_arr=result.split("\n");
                                                 var cell_id=res_arr[4].split("=")[1];
